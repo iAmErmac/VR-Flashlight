@@ -1,0 +1,5 @@
+
+GameInfo
+{
+	AddEventHandlers = "S_FlashLightControl"
+}

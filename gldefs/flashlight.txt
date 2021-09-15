@@ -1,0 +1,36 @@
+
+PointLight FlashLightFloorSpot
+{
+	Color 1.0 1.0 1.0
+	Size 25
+	Offset 0 0 0
+}
+
+PointLight FlashLightFloorSpotSmall
+{
+	Color 1.0 1.0 1.0
+	Size 20
+	Offset 0 0 0
+}
+
+PointLight FlashLightFloorSpotSmaller
+{
+	Color 1.0 1.0 1.0
+	Size 15
+	Offset 0 0 0
+}
+
+Object FlashLightSpot
+{
+	Frame TNT1A { Light FlashLightFloorSpot }
+}
+
+Object FlashLightSpotSmall
+{
+	Frame TNT1A { Light FlashLightFloorSpotSmall }
+}
+
+Object FlashLightSpotSmaller
+{
+	Frame TNT1A { Light FlashLightFloorSpotSmaller }
+}

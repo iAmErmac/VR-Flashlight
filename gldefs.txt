@@ -1,0 +1,4 @@
+
+#include "gldefs/flashlight.txt"
+#include "gldefs/fl_shading.txt"
+#include "gldefs/fl_brightmaps.txt"

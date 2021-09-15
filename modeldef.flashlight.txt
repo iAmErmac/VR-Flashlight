@@ -1,0 +1,96 @@
+
+//3D model
+Model S_Flashlight
+{
+   Path "Models\flashlight"
+   Model 0 "flashlight.md3"
+   Skin 0 "flashlight.png"
+   
+   Scale -0.7 0.7 0.7
+   Offset 0.0 -20.0 -9.0
+   ZOffset -5.0
+   
+   FrameIndex FLTE A 0 0
+}
+
+//3D model battery overlay
+Model S_Flashlight
+{
+   Path "Models\flashlight"
+   Model 0 "battery_indicator.md3"
+   Skin 0 "battery_0.png"
+   
+   Scale -0.7 0.7 0.7
+   Offset 0.0 -20.0 -9.0
+   ZOffset -5.0
+   
+   FrameIndex FLBT A 0 0
+   Skin 0 "battery_1.png"
+   FrameIndex FLBT B 0 0
+   Skin 0 "battery_2.png"
+   FrameIndex FLBT C 0 0
+   Skin 0 "battery_3.png"
+   FrameIndex FLBT D 0 0
+   Skin 0 "battery_4.png"
+   FrameIndex FLBT E 0 0
+   Skin 0 "battery_5.png"
+   FrameIndex FLBT F 0 0
+   Skin 0 "battery_6.png"
+   FrameIndex FLBT G 0 0
+   Skin 0 "battery_7.png"
+   FrameIndex FLBT H 0 0
+   Skin 0 "battery_8.png"
+   FrameIndex FLBT I 0 0
+   Skin 0 "battery_9.png"
+   FrameIndex FLBT J 0 0
+   Skin 0 "battery_10.png"
+   FrameIndex FLBT K 0 0
+}
+
+//Voxel model
+Model S_Flashlight
+{
+   Path "Models\flashlight"
+   Model 0 "flashlight_v.md3"
+   Skin 0 "fl_tex.png"
+   
+   Scale -0.7 0.7 0.7
+   Offset 0.0 -20.0 -9.0
+   ZOffset -5.0
+   
+   FrameIndex FLTV A 0 0
+}
+
+//Voxel model battery overlay
+Model S_Flashlight
+{
+   Path "Models\flashlight"
+   Model 0 "battery_indicator_v.md3"
+   Skin 0 "battery_0.png"
+   
+   Scale -0.7 0.7 0.7
+   Offset 0.0 -20.0 -9.0
+   ZOffset -5.0
+   
+   FrameIndex FLBV A 0 0
+   Skin 0 "battery_1.png"
+   FrameIndex FLBV B 0 0
+   Skin 0 "battery_2.png"
+   FrameIndex FLBV C 0 0
+   Skin 0 "battery_3.png"
+   FrameIndex FLBV D 0 0
+   Skin 0 "battery_4.png"
+   FrameIndex FLBV E 0 0
+   Skin 0 "battery_5.png"
+   FrameIndex FLBV F 0 0
+   Skin 0 "battery_6.png"
+   FrameIndex FLBV G 0 0
+   Skin 0 "battery_7.png"
+   FrameIndex FLBV H 0 0
+   Skin 0 "battery_8.png"
+   FrameIndex FLBV I 0 0
+   Skin 0 "battery_9.png"
+   FrameIndex FLBV J 0 0
+   Skin 0 "battery_10.png"
+   FrameIndex FLBV K 0 0
+}

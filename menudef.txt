@@ -1,0 +1,50 @@
+
+OptionValue FLModelOptions {
+
+    0, "Voxel Model"
+    1, "3D Model"
+
+}
+
+OptionValue FLPickupModelOptions {
+
+    0, "Sprite"
+    1, "Voxel Model"
+    2, "3D Model"
+
+}
+
+
+OptionMenu "VR_Flashlight"
+{
+    Title "VR Flashlight Options"
+    StaticText " "
+    Option "Flashlight Model", vr_flashlight_model, FLModelOptions
+    Option "Pickup Model", vr_flashlight_pickup, FLPickupModelOptions
+    Slider "Battery Capacity (Minutes)", vr_flashlight_batt_cap, 0, 10, 1, 0
+    StaticText "Setting this to zero will disable battery drain", "DarkGrey"
+    Option "Show Battery Level", vr_flashlight_batt_overlay, "OnOff", vr_flashlight_batt_cap
+    Option "Dim when low battery", vr_flashlight_dim, "OnOff"
+    Option "Weapon mounted flashlight", vr_flashlight_mount, "OnOff"
+    StaticText " "
+	Control "Quick flashlight toggle", "netevent fl_quick_toggle"
+    StaticText "Pressing quick flashlight key will switch to Flashlight", "DarkGrey"
+    StaticText "Press again to switch back to the last weapon", "DarkGrey"
+    StaticText "When weapon mounted flashlight enabled this will works as On/Off switch", "DarkGrey"
+    StaticText " "
+    StaticText "Flashlight Customization", "Gold"
+    ColorPicker "Color", "vr_flashlight_color"
+    StaticText " "
+    Slider "Intensity (Range)", "vr_flashlight_intensity", 0, 1024, 1, 0
+    StaticText " "
+    Slider "Inner Angle", "vr_flashlight_inner", 0, 180, 1, 0
+    Slider "Outer Angle", "vr_flashlight_outer", 0, 180, 1, 0
+}
+
+AddOptionMenu "OptionsMenu" {
+    
+    StaticText " "
+    
+    Submenu "VR Flashlight Options", "VR_Flashlight"
+
+}

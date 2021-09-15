@@ -1,0 +1,51 @@
+
+brightmap texture models/flashlight/flashlight.png
+{
+   map models/flashlight/flashlight_bm.jpg
+}
+
+brightmap texture models/flashlight/fl_tex.png
+{
+   map models/flashlight/fl_tex_bm.png
+}
+
+brightmap texture models/flashlight/battery_1.png
+{
+   map models/flashlight/battery_1_bm.png
+}
+brightmap texture models/flashlight/battery_2.png
+{
+   map models/flashlight/battery_2_bm.png
+}
+brightmap texture models/flashlight/battery_3.png
+{
+   map models/flashlight/battery_3_bm.png
+}
+brightmap texture models/flashlight/battery_4.png
+{
+   map models/flashlight/battery_4_bm.png
+}
+brightmap texture models/flashlight/battery_5.png
+{
+   map models/flashlight/battery_5_bm.png
+}
+brightmap texture models/flashlight/battery_6.png
+{
+   map models/flashlight/battery_6_bm.png
+}
+brightmap texture models/flashlight/battery_7.png
+{
+   map models/flashlight/battery_7_bm.png
+}
+brightmap texture models/flashlight/battery_8.png
+{
+   map models/flashlight/battery_8_bm.png
+}
+brightmap texture models/flashlight/battery_9.png
+{
+   map models/flashlight/battery_9_bm.png
+}
+brightmap texture models/flashlight/battery_10.png
+{
+   map models/flashlight/battery_10_bm.png
+}
