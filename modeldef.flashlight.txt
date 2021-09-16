@@ -31,6 +31,24 @@ Model S_Flashlight
    FrameIndex FLTN A 0 0
 }
 
+//Pickup model
+Model S_Flashlight
+{
+   Path "Models\flashlight"
+   Model 0 "flashlight_pickup.md3"
+   SurfaceSkin 0 0 "flashlight2.png"
+   SurfaceSkin 0 1 "flashlight2.png"
+   SurfaceSkin 0 2 "flashlight_glass.png"
+   
+   Scale -0.5 0.5 0.5
+   Offset 0.0 0.0 0.0
+   
+   ROTATING
+   Rotation-Speed 0.2
+   
+   FrameIndex FLTE P 0 0
+}
+
 //3D model battery overlay
 Model S_Flashlight
 {
@@ -95,6 +113,24 @@ Model S_Flashlight
    ZOffset -5.0
    
    FrameIndex FLVN A 0 0
+}
+
+//pickup model
+Model S_Flashlight
+{
+   Path "Models\flashlight"
+   Model 0 "flashlight_pickup_v.md3"
+   SurfaceSkin 0 0 "fl_tex.png"
+   SurfaceSkin 0 1 "fl_tex_glass.png"
+   SurfaceSkin 0 2 "fl_tex_white2.png"
+   
+   Scale -0.5 0.5 0.5
+   Offset 0.0 0.0 0.0
+   
+   ROTATING
+   Rotation-Speed 0.2
+   
+   FrameIndex FLTV P 0 0
 }
 
 //Voxel model battery overlay
