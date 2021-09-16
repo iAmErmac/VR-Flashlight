@@ -378,12 +378,23 @@ Class S_FlashLight : Fist
 	action void A_CheckModel()
 	{
 		Int model_type = CVar.GetCVar("vr_flashlight_model").GetInt();
+		let fl = TrackedSpotLight(invoker.f_light);
 		
 		String w_sprite;
 		if(model_type == 1)
-			w_sprite = "FLTE";
+		{
+			if(fl && fl.on)
+				w_sprite = "FLTE";
+			else
+				w_sprite = "FLTN";
+		}
 		else
-			w_sprite = "FLTV";
+		{
+			if(fl && fl.on)
+				w_sprite = "FLTV";
+			else
+				w_sprite = "FLVN";
+		}
 			
 		if (player) Player.GetPSprite(PSP_WEAPON).sprite = GetSpriteIndex(w_sprite);
 	}
@@ -534,7 +545,9 @@ Class S_FlashLight : Fist
 		FLBV K 1;
 		Stop;
 	Dummy:
+		FLTN A 0;
 		FLTV A 0;
+		FLVN A 0;
 		Stop;
 	}
 	

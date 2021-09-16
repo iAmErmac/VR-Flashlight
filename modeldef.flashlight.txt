@@ -4,13 +4,31 @@ Model S_Flashlight
 {
    Path "Models\flashlight"
    Model 0 "flashlight.md3"
-   Skin 0 "flashlight.png"
+   SurfaceSkin 0 0 "flashlight.png"
+   SurfaceSkin 0 1 "flashlight_glass.png"
+   SurfaceSkin 0 2 "flashlight.png"
    
    Scale -0.7 0.7 0.7
    Offset 0.0 -20.0 -9.0
    ZOffset -5.0
    
    FrameIndex FLTE A 0 0
+}
+
+//no brightmap
+Model S_Flashlight
+{
+   Path "Models\flashlight"
+   Model 0 "flashlight.md3"
+   SurfaceSkin 0 0 "flashlight2.png"
+   SurfaceSkin 0 1 "flashlight_glass.png"
+   SurfaceSkin 0 2 "flashlight2.png"
+   
+   Scale -0.7 0.7 0.7
+   Offset 0.0 -20.0 -9.0
+   ZOffset -5.0
+   
+   FrameIndex FLTN A 0 0
 }
 
 //3D model battery overlay
@@ -52,13 +70,31 @@ Model S_Flashlight
 {
    Path "Models\flashlight"
    Model 0 "flashlight_v.md3"
-   Skin 0 "fl_tex.png"
+   SurfaceSkin 0 0 "fl_tex.png"
+   SurfaceSkin 0 1 "fl_transparent.png"
+   SurfaceSkin 0 2 "fl_tex_white.png"
    
    Scale -0.7 0.7 0.7
    Offset 0.0 -20.0 -9.0
    ZOffset -5.0
    
    FrameIndex FLTV A 0 0
+}
+
+//no brightmap
+Model S_Flashlight
+{
+   Path "Models\flashlight"
+   Model 0 "flashlight_v.md3"
+   SurfaceSkin 0 0 "fl_tex.png"
+   SurfaceSkin 0 1 "fl_tex_glass.png"
+   SurfaceSkin 0 2 "fl_tex_white2.png"
+   
+   Scale -0.7 0.7 0.7
+   Offset 0.0 -20.0 -9.0
+   ZOffset -5.0
+   
+   FrameIndex FLVN A 0 0
 }
 
 //Voxel model battery overlay

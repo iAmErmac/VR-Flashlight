@@ -1,6 +1,6 @@
 # Flashlight for Doom VR
 
-[Flashlight for Doom VR](https://i.imgflip.com/24egfa.gif)
+![Flashlight for Doom VR](https://i.imgflip.com/24egfa.gif)
 
 A Spotlight based flashlight mod to use with Doom in VR. Unlike the other flashlight mods out there, this flashlight actually follows your tracked controller rather than head movements. It's quite tricky in GZDoom engine since the engine doesn't seem to provide the weapon offsets/angle/pitch so I had to figure out some hacky way to track the controller offset/angle/pitch. I'm not really happy about the sphaghetti codes but hey if it works, it works.
 
@@ -57,8 +57,8 @@ To install:
 * [DarkDoomZ:](https://github.com/caligari87/darkdoomz/releases/latest)
   - DarkDoomZ can be used to make any Doom level darker by reducing the light levels across all sectors in the map. Use options from DarkDoomZ Settings to adjust the effect as you desire. DarkDoomZ includes it's own head/shoulder mounted flashlight but its not necessary to use it (or you can use both the headmounted and weapon mounted flashlight if you find that convenient)
   
-* [Aliens Eradication:](https://github.com/iAmErmac/Aliens-Eradication-VR-addon)
-  This is a perfect mod to use the flashlight with since it loads any doom map with a very dark environment. Aliens Eradication has it's own head/shoulder mounted flashlight and you can use both if you want to (though it's recommended to use only one)
+* [Aliens: Eradication:](https://github.com/iAmErmac/Aliens-Eradication-VR-addon)
+  - This is a perfect mod to use the flashlight with since it loads any doom map with a very dark environment. Aliens Eradication has it's own head/shoulder mounted flashlight and you can use both if you want to (though it's recommended to use only one)
 
 ## Credits
 
