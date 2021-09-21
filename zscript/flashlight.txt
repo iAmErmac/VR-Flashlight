@@ -126,8 +126,6 @@ class TrackedSpotLight : Spotlight {
 	
         if(ready && on)
 		{
-			offset = (0, 0, 0);
-			
 			if(offhand)
 			{
 				s_pos = toFollow.OffhandPos;
@@ -141,10 +139,12 @@ class TrackedSpotLight : Spotlight {
 				s_pitch = toFollow.AttackPitch;
 			}
 			
+			offset = (0, 0, 0);
+			
             A_SetAngle(s_angle + 90.0, 0);
             Vector2 finalOffset2D = RotateVector ((offset.x, offset.y), s_angle - 90.0);                         
             finalOffset = (finalOffset2D.x, finalOffset2D.y, offset.z);
-            A_SetPitch(s_pitch * -1, SPF_INTERPOLATE);
+            A_SetPitch(-s_pitch, SPF_INTERPOLATE);
             SetOrigin(s_pos + finalOffset, true);
         }
 		else if(on && toFollow)
@@ -168,6 +168,7 @@ Class S_FlashLight : Fist
 	float fl_inner_angle;
 	float fl_outer_angle;
 	int fl_flicker;
+	Actor offhand_flashlight;
 	
 	override void BeginPlay()
 	{
@@ -193,7 +194,7 @@ Class S_FlashLight : Fist
 		if(!f_light)
 		{
 			f_light = Actor.Spawn("TrackedSpotLight");
-			TrackedSpotLight(f_light).toFollow = owner.player.mo;
+			TrackedSpotLight(f_light).toFollow = owner;
 		}
 		
 		let fl = TrackedSpotLight(f_light);
@@ -340,18 +341,9 @@ Class S_FlashLight : Fist
 			return;
 		}
 		
-		if(vr_flashlight_mount)
-		{
-			if(vr_flashlight_mount == 2) //offhand mount
-				fl.offhand = true;
-			else
-				fl.offhand = false;
-		}
+		//Offhand flashlight routine
 		
-		//Flashlight beam tracer routine
-		
-		if(!fl.ready || !fl.on) return;		
-		let bounce_light_tracer = owner.SpawnPlayerMissile("FlashLightBeamSpot");
+		Set_OffHandFlashlight();
 	}
 	
 	override void DetachFromOwner()
@@ -414,6 +406,42 @@ Class S_FlashLight : Fist
 
 		invoker.sprite = GetSpriteIndex(p_sprite);
 		invoker.A_SetScale(0.7);
+	}
+	
+	action void Set_OffHandFlashlight()
+	{
+		let pmo = invoker.owner.player.mo;
+		let fl = TrackedSpotLight(invoker.f_light);
+		
+		if(vr_flashlight_mount < 2 || invoker.owner.player.ReadyWeapon == invoker)
+		{
+			if(invoker.offhand_flashlight) invoker.offhand_flashlight.destroy();
+			fl.offhand = false;
+			return;
+		}
+	
+		if(vr_flashlight_mount == 2)
+		{
+			if(!fl.on)
+			{
+				if(invoker.offhand_flashlight) invoker.offhand_flashlight.destroy();
+				return;
+			}
+		
+			fl.offhand = true;
+			
+			let pmo = invoker.owner.player.mo;
+			
+			if(!invoker.offhand_flashlight)
+			{
+				invoker.offhand_flashlight = Actor.Spawn("OffhandFlashlight", pmo.OffhandPos);
+				invoker.offhand_flashlight.master = invoker.owner;
+			}
+			
+			invoker.offhand_flashlight.A_SetAngle(pmo.OffhandAngle + 90.0);
+			invoker.offhand_flashlight.A_SetPitch(-pmo.OffhandPitch, SPF_INTERPOLATE);
+			invoker.offhand_flashlight.SetOrigin(pmo.OffhandPos, false);
+		}
 	}
 	
 	Default
@@ -551,80 +579,70 @@ Class S_FlashLight : Fist
 		FLVN A 0;
 		Stop;
 	}
-	
-	static const statelabel bl_labels[] =
-	{
-	"BatteryLevel1", "BatteryLevel2", "BatteryLevel3", "BatteryLevel4", "BatteryLevel5", "BatteryLevel6", "BatteryLevel7", "BatteryLevel8", "BatteryLevel9", "BatteryLevel10"
-	};
 }
 
-//Dynamic light actors to use when flashlight hits the floor
-
-Class FlashLightBeamSpot : Actor
+Class OffhandFlashlight : Actor
 {
 	Default
 	{
-	Projectile;
-	+MISSILE;
-	+NOGRAVITY;
-	+NOBLOCKMAP;
-	+DONTSPLASH;
-	+THRUACTORS;
-	Renderstyle "None";
-	Radius 10;
-	Height 10;
-	Damage 0;
-	Speed 65;
+	+INTERPOLATEANGLES
+	+FRIENDLY
+	+NOBLOOD
+	+GHOST
+	+THRUGHOST
+	+THRUACTORS
+	+THRUSPECIES
+	+NONSHOOTABLE
+	+NOGRAVITY
+	-SHOOTABLE
+	+NOBLOCKMAP
+	-NOLIFTDROP
+	+NOTRIGGER
+	-BLOCKASPLAYER
+	+NOFRICTION
+	+NOFRICTIONBOUNCE
+	-FALLDAMAGE
+	+NOTELEPORT
+	-TELESTOMP
+	+NOTELEFRAG
+	+DONTDRAIN
+	-CANBLAST
+	+NOTIMEFREEZE
+	+DONTBLAST
+	+DONTTHRUST
+	+NOTARGET
+	+NOCLIP
+	+INVULNERABLE
+	+DONTMORPH
+	+DONTSQUASH
+	+NOTELEOTHER
+	+DONTGIB
+	+NOPAIN
+	-COUNTKILL
+	
+	Health 99999;
+	Mass 99999;
+	Radius 20;
+	Height 20;
+	Speed 1;
+	SeeSound "";
+	AttackSound "";
+	PainSound "";
+	DeathSound "";
+	ActiveSound "";
+	Tag "Flashlight";
+	Scale 0.22;
 	}
 	
 	States
 	{
 	Spawn:
-		TNT1 A 1;
-		Stop;
-	Death:
-	XDeath:
-	Crash:
-		//TNT1 A 0 A_CheckFloor("NoLightSpot");
-		//TNT1 A 0 A_CheckCeiling("NoLightSpot");
-		TNT1 A 0 A_JumpIf(invoker.master && S_FlashLight(invoker.master).fl_batt_level == 2, "SmallLightSpot");
-		TNT1 A 0 A_JumpIf(invoker.master && S_FlashLight(invoker.master).fl_batt_level == 1, "SmallerLightSpot");
-		TNT1 A 1 A_SpawnItem("FlashLightSpot");
-		Stop;
-	SmallLightSpot:
-		TNT1 A 1 A_SpawnItem("FlashLightSpotSmall");
-		Stop;
-	SmallerLightSpot:
-		TNT1 A 1 A_SpawnItem("FlashLightSpotSmaller");
-		Stop;
-	NoLightSpot:
-		TNT1 A 0;
+		FLTE A 1;
+		Loop;
+	Dummy:
+		FLTN A 0;
+		FLTV A 0;
+		FLVN A 0;
 		Stop;
 	}
 }
-
-Class FlashLightSpot : Actor
-{
-	Default
-	{
-	+NOGRAVITY;
-	//+NOCLIP;
-	+NOBLOCKMAP;
-	+DONTSPLASH;
-	+THRUACTORS;
-	Renderstyle "None";
-	Radius 10;
-	Height 10;
-	Damage 0;
-	}
-	
-	States
-	{
-	Spawn:
-		TNT1 A 3; //Why do you need 3 ticks to spawn dynamic light?
-		Stop;
-	}
-}
-
-Class FlashLightSpotSmall : FlashLightSpot {}
-Class FlashLightSpotSmaller : FlashLightSpot {}

@@ -18,7 +18,7 @@ OptionValue FLWeaponMountOption {
 
     0, "Disabled"
     1, "Mount at Weapon"
-    2, "Mount at Offhand"
+    2, "Mount in Off-hand"
 
 }
 
