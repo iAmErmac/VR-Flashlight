@@ -14,6 +14,14 @@ OptionValue FLPickupModelOptions {
 
 }
 
+OptionValue FLWeaponMountOption {
+
+    0, "Disabled"
+    1, "Mount at Weapon"
+    2, "Mount at Offhand"
+
+}
+
 
 OptionMenu "VR_Flashlight"
 {
@@ -25,7 +33,7 @@ OptionMenu "VR_Flashlight"
     StaticText "Setting this to zero will disable battery drain", "DarkGrey"
     Option "Show Battery Level", vr_flashlight_batt_overlay, "OnOff", vr_flashlight_batt_cap
     Option "Dim when low battery", vr_flashlight_dim, "OnOff"
-    Option "Weapon mounted flashlight", vr_flashlight_mount, "OnOff"
+    Option "Mount Flashlight", vr_flashlight_mount, "FLWeaponMountOption"
     StaticText " "
 	Control "Quick flashlight toggle", "netevent fl_quick_toggle"
     StaticText "Pressing quick flashlight key will switch to Flashlight", "DarkGrey"

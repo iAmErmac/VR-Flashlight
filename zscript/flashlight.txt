@@ -78,22 +78,12 @@ Class S_FlashLightControl : EventHandler
 
 class TrackedSpotLight : Spotlight {
 
-    enum ELocation
-	{
-		HELMET = 0,
-		RIGHT_SHOULDER = 1,
-		LEFT_SHOULDER = 2,
-        CAMERA = 3
-	};
-
     Actor toFollow;
-	Double w_pitch;
+	Bool offhand;
     Vector3 offset;
     Vector3 finalOffset;
     bool ready;
     bool on;
-    
-    ELocation location;
     
     void updateFromCvars ()
 	{
@@ -130,22 +120,36 @@ class TrackedSpotLight : Spotlight {
 			Super.Tick();
 			return;
 		}
+			
+		Vector3 s_pos;
+		Double s_angle, s_pitch;
 	
         if(ready && on)
 		{
-			offset = (0, 0, 0);	
-			if(!w_pitch) w_pitch = 30;
+			offset = (0, 0, 0);
 			
-            A_SetAngle(toFollow.angle, 0);
-            Vector2 finalOffset2D = RotateVector ((offset.x, offset.y), toFollow.angle - 90.0);                         
+			if(offhand)
+			{
+				s_pos = toFollow.OffhandPos;
+				s_angle = toFollow.OffhandAngle;
+				s_pitch = toFollow.OffhandPitch;
+			}
+			else
+			{
+				s_pos = toFollow.AttackPos;
+				s_angle = toFollow.AttackAngle;
+				s_pitch = toFollow.AttackPitch;
+			}
+			
+            A_SetAngle(s_angle + 90.0, 0);
+            Vector2 finalOffset2D = RotateVector ((offset.x, offset.y), s_angle - 90.0);                         
             finalOffset = (finalOffset2D.x, finalOffset2D.y, offset.z);
-            A_SetPitch(w_pitch, SPF_INTERPOLATE);
-            SetOrigin(self.toFollow.pos + finalOffset, true);
+            A_SetPitch(s_pitch * -1, SPF_INTERPOLATE);
+            SetOrigin(s_pos + finalOffset, true);
         }
 		else if(on && toFollow)
 		{
             ready = true;
-            //zBump = (toFollow.height - toFollow.viewheight) / 2;
         }
         Super.Tick();
     }
@@ -155,7 +159,6 @@ class TrackedSpotLight : Spotlight {
 Class S_FlashLight : Fist
 {
 	Actor f_light;
-	Double fl_pitch;
 	Bool f_light_on;
 	int fl_batt_counter;
 	int fl_batt_capacity;
@@ -190,7 +193,7 @@ Class S_FlashLight : Fist
 		if(!f_light)
 		{
 			f_light = Actor.Spawn("TrackedSpotLight");
-			TrackedSpotLight(f_light).toFollow = self;
+			TrackedSpotLight(f_light).toFollow = owner.player.mo;
 		}
 		
 		let fl = TrackedSpotLight(f_light);
@@ -337,20 +340,18 @@ Class S_FlashLight : Fist
 			return;
 		}
 		
+		if(vr_flashlight_mount)
+		{
+			if(vr_flashlight_mount == 2) //offhand mount
+				fl.offhand = true;
+			else
+				fl.offhand = false;
+		}
+		
 		//Flashlight beam tracer routine
 		
-		if(!fl.ready || !fl.on) return;
-		
-		Actor beam_tracer = owner.SpawnPlayerMissile("FlashLightBeamTracer");
+		if(!fl.ready || !fl.on) return;		
 		let bounce_light_tracer = owner.SpawnPlayerMissile("FlashLightBeamSpot");
-		if(bounce_light_tracer) bounce_light_tracer.master = self;
-		
-		if(beam_tracer)
-		{
-			beam_tracer.master = self; //setting tracer beam as child so it can communicate back
-			fl.toFollow = beam_tracer; //Spotlight will follow tracer beam
-			if(fl_pitch) fl.w_pitch = fl_pitch;
-		}
 	}
 	
 	override void DetachFromOwner()
@@ -555,54 +556,6 @@ Class S_FlashLight : Fist
 	{
 	"BatteryLevel1", "BatteryLevel2", "BatteryLevel3", "BatteryLevel4", "BatteryLevel5", "BatteryLevel6", "BatteryLevel7", "BatteryLevel8", "BatteryLevel9", "BatteryLevel10"
 	};
-}
-
-Class FlashLightBeamTracer : Actor
-{
-	Vector3 t_pos;
-	double t_pitch;
-	
-	override void BeginPlay()
-	{
-		t_pos = self.pos;
-	}
-
-	override void Tick()
-	{
-		Super.Tick();
-		
-		let dX = t_pos.x - self.pos.x;
-		let dY = t_pos.y - self.pos.y;
-		let dZ = t_pos.z - self.pos.z;
-		
-		//let t_pitch = atan2(sqrt(dZ * dZ + dX * dX), dY); //Didn't work for some reason
-		t_pitch = (atan2(sqrt(dX * dX + dY * dY), dZ) * -1) + 90; //idk how the fuck I made this work, but it works!
-		
-		S_FlashLight(master).fl_pitch = t_pitch; //update tracer pitch info in parent actor
-	}
-
-	Default
-	{
-	Projectile;
-	+MISSILE;
-	+NOGRAVITY;
-	+NOBLOCKMAP;
-	+DONTSPLASH;
-	+THRUACTORS;
-	//+NOCLIP;
-	Radius 1;
-	Height 1;
-	Damage 0;
-	Speed 65;
-	RenderStyle "None";
-	}
-	
-	States
-	{
-	Spawn:
-		TNT1 A 1; //don't need more than a single tick
-		Stop;
-	}
 }
 
 //Dynamic light actors to use when flashlight hits the floor
