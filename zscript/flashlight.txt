@@ -440,7 +440,8 @@ Class S_FlashLight : Fist
 			
 			invoker.offhand_flashlight.A_SetAngle(pmo.OffhandAngle + 90.0);
 			invoker.offhand_flashlight.A_SetPitch(-pmo.OffhandPitch, SPF_INTERPOLATE);
-			invoker.offhand_flashlight.SetOrigin(pmo.OffhandPos, false);
+			invoker.offhand_flashlight.A_SetRoll(pmo.OffhandRoll);
+			invoker.offhand_flashlight.SetOrigin(pmo.OffhandPos, true);
 		}
 	}
 	
