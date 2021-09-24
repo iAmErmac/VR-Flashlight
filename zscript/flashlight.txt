@@ -139,7 +139,7 @@ class TrackedSpotLight : Spotlight {
 				s_pitch = toFollow.AttackPitch;
 			}
 			
-			offset = (0, 0, 0);
+			offset = (toFollow.radius, 0, 0);
 			
             A_SetAngle(s_angle + 90.0, 0);
             Vector2 finalOffset2D = RotateVector ((offset.x, offset.y), s_angle - 90.0);                         
@@ -169,6 +169,7 @@ Class S_FlashLight : Fist
 	float fl_outer_angle;
 	int fl_flicker;
 	Actor offhand_flashlight;
+	Int tic_count;
 	
 	override void BeginPlay()
 	{
@@ -438,6 +439,9 @@ Class S_FlashLight : Fist
 				invoker.offhand_flashlight.master = invoker.owner;
 			}
 			
+			OffhandFlashlight(invoker.offhand_flashlight).battery_level = invoker.fl_batt_level;
+			OffhandFlashlight(invoker.offhand_flashlight).battery_low = invoker.fl_batt_low_blink;
+			
 			invoker.offhand_flashlight.A_SetAngle(pmo.OffhandAngle + 90.0);
 			invoker.offhand_flashlight.A_SetPitch(-pmo.OffhandPitch, SPF_INTERPOLATE);
 			invoker.offhand_flashlight.A_SetRoll(pmo.OffhandRoll);
@@ -584,9 +588,11 @@ Class S_FlashLight : Fist
 
 Class OffhandFlashlight : Actor
 {
+	Int battery_level;
+	Int battery_low;
+
 	Default
 	{
-	+INTERPOLATEANGLES
 	+FRIENDLY
 	+NOBLOOD
 	+GHOST
@@ -620,9 +626,10 @@ Class OffhandFlashlight : Actor
 	+DONTGIB
 	+NOPAIN
 	-COUNTKILL
+	+NOTONAUTOMAP
 	
 	Health 99999;
-	Mass 99999;
+	Mass 0;
 	Radius 20;
 	Height 20;
 	Speed 1;
@@ -632,14 +639,128 @@ Class OffhandFlashlight : Actor
 	DeathSound "";
 	ActiveSound "";
 	Tag "Flashlight";
-	Scale 0.22;
+	XScale 0.21;
+	YScale -0.21;
+	}
+	
+	action void A_CheckModel()
+	{
+		Int model_type = CVar.GetCVar("vr_flashlight_model").GetInt();
+		String w_sprite;
+		
+		if(model_type == 1)
+			w_sprite = "FLTE";
+		else
+			w_sprite = "FLTV";
+			
+		sprite = GetSpriteIndex(w_sprite);
 	}
 	
 	States
 	{
 	Spawn:
-		FLTE A 1;
+	Idle:
+		FLTE A 0 A_CheckModel();
+		"####" A 0 A_JumpIf(invoker.battery_level == -1, 2);
+		"####" A 0 A_JumpIf(vr_flashlight_batt_overlay == 1, "Show.BatteryLevel");
+		"####" A 1;
 		Loop;
+	Show.BatteryLevel:
+		FLBT A 0 A_JumpIf(vr_flashlight_batt_overlay == 0, "Idle");
+		FLBT A 0 A_JumpIf(vr_flashlight_model == 0, "Show.VBatteryLevel");
+		FLBT A 0 A_JumpIf(invoker.battery_level == 0, "BatteryLevel0");
+		FLBT A 0 A_JumpIf(invoker.battery_level == 1, "BatteryLevel1");
+		FLBT A 0 A_JumpIf(invoker.battery_level == 2, "BatteryLevel2");
+		FLBT A 0 A_JumpIf(invoker.battery_level == 3, "BatteryLevel3");
+		FLBT A 0 A_JumpIf(invoker.battery_level == 4, "BatteryLevel4");
+		FLBT A 0 A_JumpIf(invoker.battery_level == 5, "BatteryLevel5");
+		FLBT A 0 A_JumpIf(invoker.battery_level == 6, "BatteryLevel6");
+		FLBT A 0 A_JumpIf(invoker.battery_level == 7, "BatteryLevel7");
+		FLBT A 0 A_JumpIf(invoker.battery_level == 8, "BatteryLevel8");
+		FLBT A 0 A_JumpIf(invoker.battery_level == 9, "BatteryLevel9");
+		FLBT A 0 A_JumpIf(invoker.battery_level == 10, "BatteryLevel10");
+		Stop;
+	BatteryLevel0:
+		FLBT A 1;
+		Goto Idle;
+	BatteryLevel1:
+		FLBT A 0 A_JumpIf(invoker.battery_low < 18, "BatteryLevel0");
+		FLBT B 1;
+		Goto Idle;
+	BatteryLevel2:
+		FLBT C 1;
+		Goto Idle;
+	BatteryLevel3:
+		FLBT D 1;
+		Goto Idle;
+	BatteryLevel4:
+		FLBT E 1;
+		Goto Idle;
+	BatteryLevel5:
+		FLBT F 1;
+		Goto Idle;
+	BatteryLevel6:
+		FLBT G 1;
+		Goto Idle;
+	BatteryLevel7:
+		FLBT H 1;
+		Goto Idle;
+	BatteryLevel8:
+		FLBT I 1;
+		Goto Idle;
+	BatteryLevel9:
+		FLBT J 1;
+		Goto Idle;
+	BatteryLevel10:
+		FLBT K 1;
+		Goto Idle;
+	Show.VBatteryLevel:
+		FLBV A 0 A_JumpIf(invoker.battery_level == 0, "VBatteryLevel0");
+		FLBV A 0 A_JumpIf(invoker.battery_level == 1, "VBatteryLevel1");
+		FLBV A 0 A_JumpIf(invoker.battery_level == 2, "VBatteryLevel2");
+		FLBV A 0 A_JumpIf(invoker.battery_level == 3, "VBatteryLevel3");
+		FLBV A 0 A_JumpIf(invoker.battery_level == 4, "VBatteryLevel4");
+		FLBV A 0 A_JumpIf(invoker.battery_level == 5, "VBatteryLevel5");
+		FLBV A 0 A_JumpIf(invoker.battery_level == 6, "VBatteryLevel6");
+		FLBV A 0 A_JumpIf(invoker.battery_level == 7, "VBatteryLevel7");
+		FLBV A 0 A_JumpIf(invoker.battery_level == 8, "VBatteryLevel8");
+		FLBV A 0 A_JumpIf(invoker.battery_level == 9, "VBatteryLevel9");
+		FLBV A 0 A_JumpIf(invoker.battery_level == 10, "VBatteryLevel10");
+		Stop;
+	VBatteryLevel0:
+		FLBV A 1;
+		Goto Idle;
+	VBatteryLevel1:
+		FLBV A 0 A_JumpIf(invoker.battery_low < 18, "VBatteryLevel0");
+		FLBV B 1;
+		Goto Idle;
+	VBatteryLevel2:
+		FLBV C 1;
+		Goto Idle;
+	VBatteryLevel3:
+		FLBV D 1;
+		Goto Idle;
+	VBatteryLevel4:
+		FLBV E 1;
+		Goto Idle;
+	VBatteryLevel5:
+		FLBV F 1;
+		Goto Idle;
+	VBatteryLevel6:
+		FLBV G 1;
+		Goto Idle;
+	VBatteryLevel7:
+		FLBV H 1;
+		Goto Idle;
+	VBatteryLevel8:
+		FLBV I 1;
+		Goto Idle;
+	VBatteryLevel9:
+		FLBV J 1;
+		Goto Idle;
+	VBatteryLevel10:
+		FLBV K 1;
+		Goto Idle;
 	Dummy:
 		FLTN A 0;
 		FLTV A 0;

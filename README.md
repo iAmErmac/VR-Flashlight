@@ -1,6 +1,6 @@
 # Flashlight for Doom VR
 
-![Flashlight for Doom VR](https://i.imgflip.com/24egfa.gif)
+![Flashlight for Doom VR](https://thumbs.gfycat.com/FickleLankyDuck-size_restricted.gif)
 
 A Spotlight based flashlight mod to use with Doom in VR. Unlike the other flashlight mods out there, this flashlight actually follows your tracked controller rather than head movements. It's quite tricky in GZDoom engine since the engine doesn't seem to provide the weapon offsets/angle/pitch so I had to figure out some hacky way to track the controller offset/angle/pitch. I'm not really happy about the sphaghetti codes but hey if it works, it works.
 
