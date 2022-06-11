@@ -1,9 +1,9 @@
 
-brightmap texture models/flashlight/flashlight.png
+brightmap texture models/flashlight/flashlight.jpg
 {
    map models/flashlight/flashlight_bm.png
 }
-brightmap texture models/flashlight/flashlight2.png
+brightmap texture models/flashlight/flashlight2.jpg
 {
    map models/flashlight/fl_tex_grey.png
 }
@@ -14,11 +14,7 @@ brightmap texture models/flashlight/fl_tex.png
 }
 brightmap texture models/flashlight/fl_tex2.png
 {
-   map models/flashlight/fl_tex_bm.png
-}
-brightmap texture models/flashlight/fl_tex_white.png
-{
-   map models/flashlight/fl_tex_white.png
+   map models/flashlight/fl_tex_grey.png
 }
 
 brightmap texture models/flashlight/battery_1.png

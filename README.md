@@ -68,6 +68,6 @@ To install:
 
 ## 3D Model credits
 
-* Flashlight 3D model - https://sketchfab.com/3d-models/flashlight-for-fps-3612d1eace2f4d1ba9fbd800350e3c74
+* Flashlight 3D model - https://sketchfab.com/3d-models/tactical-flashlight-dfb9ec2ec4f846438eab24f32ec8c656
 * Flashlight voxel model converted from 3D model by Ermac
 * All 3D models and model textures edited and modified by Ermac

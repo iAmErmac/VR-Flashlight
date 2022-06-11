@@ -78,22 +78,12 @@ Class S_FlashLightControl : EventHandler
 
 class TrackedSpotLight : Spotlight {
 
-    enum ELocation
-	{
-		HELMET = 0,
-		RIGHT_SHOULDER = 1,
-		LEFT_SHOULDER = 2,
-        CAMERA = 3
-	};
-
     Actor toFollow;
 	Double w_pitch;
     Vector3 offset;
     Vector3 finalOffset;
     bool ready;
     bool on;
-    
-    ELocation location;
     
     void updateFromCvars ()
 	{
@@ -108,7 +98,6 @@ class TrackedSpotLight : Spotlight {
         self.SpotOuterAngle = CVar.GetCVar("vr_flashlight_outer").GetFloat();
     }
     
-    
     override void Activate(Actor activator)
 	{
         updateFromCvars();
@@ -116,13 +105,11 @@ class TrackedSpotLight : Spotlight {
         super.Activate(activator);
     }
     
-    
     override void DeActivate(Actor activator)
 	{
         on = false;
         super.DeActivate(activator);
-    }
-        
+    } 
     
     override void Tick()
 	{
@@ -145,7 +132,6 @@ class TrackedSpotLight : Spotlight {
 		else if(on && toFollow)
 		{
             ready = true;
-            //zBump = (toFollow.height - toFollow.viewheight) / 2;
         }
         Super.Tick();
     }
