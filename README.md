@@ -1,8 +1,8 @@
 # Flashlight for Doom VR
 
-![Flashlight for Doom VR](https://i.imgflip.com/24egfa.gif)
+![Flashlight for Doom VR](https://i.imgflip.com/6ji2r3.gif)
 
-A Spotlight based flashlight mod to use with Doom in VR. Unlike the other flashlight mods out there, this flashlight actually follows your tracked controller rather than head movements. It's quite tricky in GZDoom engine since the engine doesn't seem to provide the weapon offsets/angle/pitch so I had to figure out some hacky way to track the controller offset/angle/pitch. I'm not really happy about the sphaghetti codes but hey if it works, it works.
+A Spotlight based flashlight mod to use with Doom in VR. Unlike the other flashlight mods out there, this flashlight actually follows your tracked controller rather than head movements. Requires the updated GZDoom build that expose controller position/angle/pitch/roll data into ZScript. This version also requires support for Off-hand weapon.
 
 To download the VR Flashlight mod click the download button below:
 
@@ -16,12 +16,14 @@ To download the VR Flashlight mod click the download button below:
 * 3D and Voxel model available for the flashlight
 * Optional battery capacity and battery indicator right on the Flashlight model itself
 * Option to attach flashlight on all your weapons (works universally)
-* Quick flashlight toggle available to switch back and forth between your weapon and flashlight or to toggle on/off when it's weapon mounted
+* Quick flashlight toggle to equip/unequip flashlight on off-hand or toggle on/off light when flashlight is weapon mounted
+* Auto flip flashligh while having a tactical hold (Harris Hold)
+* Agitate monsters focused in the light (you can turn this off in option)
 
 ## Known Issues
 * The flashlight is a bit glitchy at times, like if you are too close to a wall/floor/ceiling the spotlight may jump around because of the nature of the tracking method.
 * If the flashlight itself or flashlight mounted weapon clips with other object or wall the spotlight may disappear
-* The spotlight becomes tiny when too close to wall/floor/ceiling. To partially fix that I implemented a secondary dynamic light to illuminate area surrounding the spotlight. Sometimes the spotlight and the secondary dynamic light may appear separated depending on the wall/object/corner etc.
+* Sometimes the spotlight and the bounce light (dynamic light) may appear separated depending on the wall/object/corner etc. Turn off bounced light from option to fix that
 
 ## Installation
 
@@ -29,7 +31,7 @@ Make sure to load the VR Flashlight mod after any weapon mod. The Flashlight wil
 
 ### GZDoom VR (PC-VR)
 
-Latest GZDoom VR: https://github.com/hh79/gz3doom/releases
+Latest GZDoom VR DUal Wield version: https://github.com/iAmErmac/gzdoomvr/releases/latest
 
 To install:
 
@@ -38,12 +40,11 @@ To install:
     Copy this mod into the folder.
     Run with gzdoomvr.exe -iwad doom2.wad -file YOUR_FAVORITE_WEAPON_MOD LATEST_FLASHLIGHT_MOD
   
-OR use DoomRunner: https://github.com/Youda008/DoomRunner/releases/ to load mods with GZDoom
+OR use DoomRunner: https://github.com/Youda008/DoomRunner/releases/latest to load mods with GZDoom
 
 ### QuestZDoom (Oculus Quest)
 
-Official QuestZDoom: https://github.com/DrBeef/QuestZDoom/releases/latest
-Unofficial QuestZDoom (For more bugfixes and updates): https://github.com/emawind84/QuestZDoom/releases/latest
+Latest QuestZDoom Dual Wield version: https://github.com/emawind84/QuestZDoom/releases/tag/qzd3.88-r5e
 
 QuestZDoom launcher: https://github.com/baggyg/QuestZDoomLauncher/releases/latest
 
@@ -55,7 +56,7 @@ To install:
 ## Recommended mods to combine with:
 
 * [DarkDoomZ:](https://github.com/caligari87/darkdoomz/releases/latest)
-  - DarkDoomZ can be used to make any Doom level darker by reducing the light levels across all sectors in the map. Use options from DarkDoomZ Settings to adjust the effect as you desire. DarkDoomZ includes it's own head/shoulder mounted flashlight but its not necessary to use it (or you can use both the headmounted and weapon mounted flashlight if you find that convenient)
+  - DarkDoomZ can be used to make any Doom level darker by reducing the light levels across all sectors in the map. Use options from DarkDoomZ Settings to adjust the effect as you desire. DarkDoomZ has it's own head/shoulder mounted flashlight and you can use both if you want to (though it's recommended to use only one)
   
 * [Aliens: Eradication:](https://github.com/iAmErmac/Aliens-Eradication-VR-addon)
   - This is a perfect mod to use the flashlight with since it loads any doom map with a very dark environment. Aliens Eradication has it's own head/shoulder mounted flashlight and you can use both if you want to (though it's recommended to use only one)
@@ -65,6 +66,7 @@ To install:
 * SuaveSteve (Steve's Flashlight) - base ZScript code for the flashlight
 * mshahen - "Flashlight On/Off Clicks" (freesound.org, 271109, modified) CC BY 3.0
 * Cherno - for SimSun shader
+* Ermac - Flashlight mod scripting and model conversion
 
 ## 3D Model credits
 

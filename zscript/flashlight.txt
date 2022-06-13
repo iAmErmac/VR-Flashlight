@@ -1,14 +1,12 @@
 
 Class S_FlashLightControl : EventHandler
 {
-	String set_playerstartweapon;
 	String player_lastweapon;
 	Int delay_autoactivate_flashlight;
 
 	override void PlayerEntered(PlayerEvent e)
 	{
 		PlayerInfo plr = players[e.PlayerNumber];
-		if(plr.ReadyWeapon) set_playerstartweapon = plr.ReadyWeapon.GetClassName();
 		plr.mo.setinventory("S_FlashLight", 1, false);
 	}
 	
@@ -19,24 +17,9 @@ Class S_FlashLightControl : EventHandler
 		
 		if(e.Name == "fl_quick_toggle")
 		{		
-			if(!vr_flashlight_mount)
+			if(vr_flashlight_mount || plr.ReadyWeapon is "S_FlashLight")
 			{
-				//Quickly switch to flashlight when key pressed
-				
-				if(plr.ReadyWeapon is "S_FlashLight" && player_lastweapon != "")
-				{
-					plr.mo.A_SelectWeapon(player_lastweapon);
-				}
-				if(!(plr.ReadyWeapon is "S_FlashLight"))
-				{
-					player_lastweapon = plr.ReadyWeapon.GetClassName();
-					plr.mo.A_SelectWeapon("S_FlashLight");
-					delay_autoactivate_flashlight = 25;
-				}
-			}
-			else
-			{
-				//Or toggle flashlight on/off when weapon mounted
+				//toggle flashlight on/off when weapon mounted or olding flashlight on main hand
 				
 				let fl = TrackedSpotLight(S_FlashLight(plr.mo.findinventory("S_FlashLight")).f_light);
 				
@@ -49,6 +32,29 @@ Class S_FlashLightControl : EventHandler
 				{
 					S_StartSound("DDZ_Flashlight_On", CHAN_WEAPON, CHAN_UI);
 					fl.Activate(plr.mo);
+				}
+			}
+			else
+			{
+				//Quickly switch to flashlight in off-hand when key pressed
+				//or unequip flashlight if equipped in off-hand already
+				
+				if(plr.OffhandWeapon is "S_FlashLight")
+				{
+					int fl_battery = S_FlashLight(plr.mo.findinventory("S_FlashLight")).fl_batt_counter; //preserve battery level before removing from inventory
+					plr.mo.setinventory("S_FlashLight", 0, false);
+					plr.mo.setinventory("S_FlashLight", 1, false);
+					S_FlashLight(plr.mo.findinventory("S_FlashLight")).fl_batt_counter = fl_battery; //restore battery level
+					
+					if(player_lastweapon != "" && Weapon(plr.mo.findinventory(player_lastweapon)).bOffhandWeapon)
+						plr.mo.A_SelectWeapon(player_lastweapon);
+				}
+				else
+				{
+					if(plr.OffhandWeapon) player_lastweapon = plr.OffhandWeapon.GetClassName();
+					Weapon(plr.mo.findinventory("S_FlashLight")).bOffhandWeapon = true; //move flashlight into off-hand
+					plr.mo.A_SelectWeapon("S_FlashLight");
+					delay_autoactivate_flashlight = 25;
 				}
 			}
 		}
@@ -68,18 +74,12 @@ Class S_FlashLightControl : EventHandler
 		{
 			delay_autoactivate_flashlight--;
 		}
-	
-		if(!set_playerstartweapon) return;
-		
-		plr.mo.A_SelectWeapon(set_playerstartweapon);
-		set_playerstartweapon = "";
 	}
 }
 
 class TrackedSpotLight : Spotlight {
 
     Actor toFollow;
-	Double w_pitch;
     Vector3 offset;
     Vector3 finalOffset;
     bool ready;
@@ -117,17 +117,41 @@ class TrackedSpotLight : Spotlight {
 			Super.Tick();
 			return;
 		}
+			
+		Vector3 s_pos;
+		Double s_angle, s_pitch, s_roll;
+		Bool offhand = Weapon(toFollow.player.mo.findinventory("S_FlashLight")).bOffhandWeapon && (toFollow.player.OffhandWeapon is "S_FlashLight");
 	
         if(ready && on)
 		{
-			offset = (0, 0, 0);	
-			if(!w_pitch) w_pitch = 30;
+			if(offhand)
+			{
+				s_pos = toFollow.OffhandPos;
+				s_angle = toFollow.OffhandAngle;
+				s_pitch = toFollow.OffhandPitch;
+				s_roll = toFollow.OffhandRoll;
+			}
+			else
+			{
+				s_pos = toFollow.AttackPos;
+				s_angle = toFollow.AttackAngle;
+				s_pitch = toFollow.AttackPitch;
+				s_roll = toFollow.AttackRoll;
+			}
 			
-            A_SetAngle(toFollow.angle, 0);
-            Vector2 finalOffset2D = RotateVector ((offset.x, offset.y), toFollow.angle - 90.0);                         
+			if(vr_flashlight_allowflip && abs(s_roll) > 120)
+			{
+				s_angle -= 180;
+				s_pitch *= -1;
+			}
+			
+			offset = (20, 0, 0);
+			
+            A_SetAngle(s_angle + 90.0, 0);
+            Vector2 finalOffset2D = RotateVector ((offset.x, offset.y), s_angle - 90.0);                         
             finalOffset = (finalOffset2D.x, finalOffset2D.y, offset.z);
-            A_SetPitch(w_pitch, SPF_INTERPOLATE);
-            SetOrigin(self.toFollow.pos + finalOffset, true);
+            A_SetPitch(-s_pitch, SPF_INTERPOLATE);
+            SetOrigin(s_pos + finalOffset, true);
         }
 		else if(on && toFollow)
 		{
@@ -151,12 +175,14 @@ Class S_FlashLight : Fist
 	float fl_inner_angle;
 	float fl_outer_angle;
 	int fl_flicker;
+	Bool is_flipped;
 	
 	override void BeginPlay()
 	{
 		fl_batt_capacity = CVar.GetCVar("vr_flashlight_batt_cap").GetInt() * 60 * 35;
 		fl_batt_counter = fl_batt_capacity;
 		fl_batt_level = 10;
+		is_flipped = false;
 	}
 	
 	override void Tick()
@@ -176,7 +202,7 @@ Class S_FlashLight : Fist
 		if(!f_light)
 		{
 			f_light = Actor.Spawn("TrackedSpotLight");
-			TrackedSpotLight(f_light).toFollow = self;
+			TrackedSpotLight(f_light).toFollow = owner;
 		}
 		
 		let fl = TrackedSpotLight(f_light);
@@ -317,26 +343,56 @@ Class S_FlashLight : Fist
 		
 		//Turn off light when switched to a weapon
 		
-		if(!vr_flashlight_mount && owner.player.ReadyWeapon != self)
+		Weapon current_weapon;
+		if(self.bOffhandWeapon)
+			current_weapon = owner.player.OffhandWeapon;
+		else
+			current_weapon = owner.player.ReadyWeapon;
+		
+		if(!vr_flashlight_mount && current_weapon != self)
 		{
 			fl.DeActivate(owner);
 			return;
 		}
 		
-		//Flashlight beam tracer routine
+		//Creating bounced light at close distance
 		
-		if(!fl.ready || !fl.on) return;
+		if(!fl.ready || !fl.on || !vr_flashlight_bouncelight) return;
 		
-		Actor beam_tracer = owner.SpawnPlayerMissile("FlashLightBeamTracer");
-		let bounce_light_tracer = owner.SpawnPlayerMissile("FlashLightBeamSpot");
-		if(bounce_light_tracer) bounce_light_tracer.master = self;
-		
-		if(beam_tracer)
-		{
-			beam_tracer.master = self; //setting tracer beam as child so it can communicate back
-			fl.toFollow = beam_tracer; //Spotlight will follow tracer beam
-			if(fl_pitch) fl.w_pitch = fl_pitch;
+		Bool followOffhand = Weapon(owner.player.mo.findinventory("S_FlashLight")).bOffhandWeapon && (owner.player.OffhandWeapon is "S_FlashLight");
+		Double b_angle = owner.angle;
+		if(is_flipped) b_angle -= 180;
+		double pitch = owner.AimTarget() ? owner.BulletSlope(null, ALF_PORTALRESTRICT) : owner.pitch;
+		Actor tempPuff = owner.LineAttack( b_angle
+										 , 92
+										 , pitch
+										 , 0
+										 , "none"
+										 , "DummyPuff"
+										 , LAF_NOINTERACT | LAF_NOIMPACTDECAL | LAF_NORANDOMPUFFZ | (followOffhand ? LAF_ISOFFHAND : 0)
+										 );
+		if (tempPuff != null) {
+			Actor bounce_light;
+			if(fl_batt_level == 2)
+				bounce_light = Actor.Spawn("FlashLightSpotSmall", tempPuff.pos);
+			else if(fl_batt_level == 1)
+				bounce_light = Actor.Spawn("FlashLightSpotSmaller", tempPuff.pos);
+			else
+				bounce_light = Actor.Spawn("FlashLightSpot", tempPuff.pos);
 		}
+		
+		//Pointing light directly on nearby monsters will alert them
+		
+		if(!vr_flashlight_alarm) return;
+		
+		owner.LineAttack( b_angle
+						 , 960
+						 , pitch
+						 , 0
+						 , "none"
+						 , "FlashLightAlarm"
+						 , LAF_NOINTERACT | LAF_NOIMPACTDECAL | LAF_NORANDOMPUFFZ | (followOffhand ? LAF_ISOFFHAND : 0)
+						 );
 	}
 	
 	override void DetachFromOwner()
@@ -363,6 +419,8 @@ Class S_FlashLight : Fist
 	
 	action void A_CheckModel()
 	{
+		if (!player || !invoker) return;
+		
 		Int model_type = CVar.GetCVar("vr_flashlight_model").GetInt();
 		let fl = TrackedSpotLight(invoker.f_light);
 		
@@ -381,8 +439,19 @@ Class S_FlashLight : Fist
 			else
 				w_sprite = "FLVN";
 		}
-			
-		if (player) Player.GetPSprite(PSP_WEAPON).sprite = GetSpriteIndex(w_sprite);
+		
+		if(invoker.bOffhandWeapon)
+			Player.GetPSprite(PSP_OFFHANDWEAPON).sprite = GetSpriteIndex(w_sprite);
+		else
+			Player.GetPSprite(PSP_WEAPON).sprite = GetSpriteIndex(w_sprite);
+		
+		if(vr_flashlight_allowflip &&
+			((invoker.bOffhandWeapon && player.OffhandWeapon is "S_FlashLight" && abs(player.mo.OffhandRoll) > 120) ||
+			(!invoker.bOffhandWeapon && player.ReadyWeapon is "S_FlashLight" && abs(player.mo.AttackRoll) > 120))
+		)
+			invoker.is_flipped = true;
+		else
+			invoker.is_flipped = false;
 	}
 	
 	action void A_CheckPickupModel()
@@ -405,10 +474,10 @@ Class S_FlashLight : Fist
 	{
 	+WEAPONSPAWN
 	+WEAPON.NOALERT;
+	+WEAPON.NO_AUTO_SWITCH;
 	+INVENTORY.UNTOSSABLE;
 	+INVENTORY.UNDROPPABLE;
 	+THRUACTORS;
-	//+NOCLIP;
 	weapon.selectionorder 4141;
 	inventory.maxamount 1;
 	}
@@ -420,8 +489,14 @@ Class S_FlashLight : Fist
 		Loop;
 	Ready:
 		FLTE A 0 A_CheckModel();
+		"####" A 0 A_JumpIf(invoker.is_flipped == true, "ReadyFlipped");
 		"####" A 0 A_Overlay(1001, "BatteryOverlay");
 		"####" A 1 A_WeaponReady;
+		Loop;
+	ReadyFlipped:
+		FLTE B 0 A_CheckModel();
+		"####" B 0 A_JumpIf(invoker.is_flipped == false, "Ready");
+		"####" B 1 A_WeaponReady;
 		Loop;
 	Deselect:
 		FLTE A 0 A_CheckModel();
@@ -437,17 +512,17 @@ Class S_FlashLight : Fist
 		Goto Ready;
 	BatteryOverlay:
 		FLBT A 0 A_JumpIf(vr_flashlight_model == 0, "VBatteryOverlay");
-		FLBT A 0 A_JumpIf(invoker.fl_batt_level == 0, "BatteryLevel0");
-		FLBT A 0 A_JumpIf(invoker.fl_batt_level == 1, "BatteryLevel1");
-		FLBT A 0 A_JumpIf(invoker.fl_batt_level == 2, "BatteryLevel2");
-		FLBT A 0 A_JumpIf(invoker.fl_batt_level == 3, "BatteryLevel3");
-		FLBT A 0 A_JumpIf(invoker.fl_batt_level == 4, "BatteryLevel4");
-		FLBT A 0 A_JumpIf(invoker.fl_batt_level == 5, "BatteryLevel5");
-		FLBT A 0 A_JumpIf(invoker.fl_batt_level == 6, "BatteryLevel6");
-		FLBT A 0 A_JumpIf(invoker.fl_batt_level == 7, "BatteryLevel7");
-		FLBT A 0 A_JumpIf(invoker.fl_batt_level == 8, "BatteryLevel8");
-		FLBT A 0 A_JumpIf(invoker.fl_batt_level == 9, "BatteryLevel9");
-		FLBT A 0 A_JumpIf(invoker.fl_batt_level == 10, "BatteryLevel10");
+		"####" A 0 A_JumpIf(invoker.fl_batt_level == 0, "BatteryLevel0");
+		"####" A 0 A_JumpIf(invoker.fl_batt_level == 1, "BatteryLevel1");
+		"####" A 0 A_JumpIf(invoker.fl_batt_level == 2, "BatteryLevel2");
+		"####" A 0 A_JumpIf(invoker.fl_batt_level == 3, "BatteryLevel3");
+		"####" A 0 A_JumpIf(invoker.fl_batt_level == 4, "BatteryLevel4");
+		"####" A 0 A_JumpIf(invoker.fl_batt_level == 5, "BatteryLevel5");
+		"####" A 0 A_JumpIf(invoker.fl_batt_level == 6, "BatteryLevel6");
+		"####" A 0 A_JumpIf(invoker.fl_batt_level == 7, "BatteryLevel7");
+		"####" A 0 A_JumpIf(invoker.fl_batt_level == 8, "BatteryLevel8");
+		"####" A 0 A_JumpIf(invoker.fl_batt_level == 9, "BatteryLevel9");
+		"####" A 0 A_JumpIf(invoker.fl_batt_level == 10, "BatteryLevel10");
 		Stop;
 	BatteryLevel0:
 		FLBT A 1;
@@ -543,95 +618,14 @@ Class S_FlashLight : Fist
 	};
 }
 
-Class FlashLightBeamTracer : Actor
-{
-	Vector3 t_pos;
-	double t_pitch;
-	
-	override void BeginPlay()
-	{
-		t_pos = self.pos;
-	}
-
-	override void Tick()
-	{
-		Super.Tick();
-		
-		let dX = t_pos.x - self.pos.x;
-		let dY = t_pos.y - self.pos.y;
-		let dZ = t_pos.z - self.pos.z;
-		
-		//let t_pitch = atan2(sqrt(dZ * dZ + dX * dX), dY); //Didn't work for some reason
-		t_pitch = (atan2(sqrt(dX * dX + dY * dY), dZ) * -1) + 90; //idk how the fuck I made this work, but it works!
-		
-		S_FlashLight(master).fl_pitch = t_pitch; //update tracer pitch info in parent actor
-	}
-
-	Default
-	{
-	Projectile;
-	+MISSILE;
-	+NOGRAVITY;
-	+NOBLOCKMAP;
-	+DONTSPLASH;
-	+THRUACTORS;
-	//+NOCLIP;
-	Radius 1;
-	Height 1;
-	Damage 0;
-	Speed 65;
-	RenderStyle "None";
-	}
-	
-	States
-	{
-	Spawn:
-		TNT1 A 1; //don't need more than a single tick
-		Stop;
-	}
-}
-
 //Dynamic light actors to use when flashlight hits the floor
 
-Class FlashLightBeamSpot : Actor
+Class DummyPuff : BulletPuff
 {
-	Default
-	{
-	Projectile;
-	+MISSILE;
-	+NOGRAVITY;
-	+NOBLOCKMAP;
-	+DONTSPLASH;
-	+THRUACTORS;
-	Renderstyle "None";
-	Radius 10;
-	Height 10;
-	Damage 0;
-	Speed 65;
-	}
-	
 	States
 	{
 	Spawn:
 		TNT1 A 1;
-		Stop;
-	Death:
-	XDeath:
-	Crash:
-		//TNT1 A 0 A_CheckFloor("NoLightSpot");
-		//TNT1 A 0 A_CheckCeiling("NoLightSpot");
-		TNT1 A 0 A_JumpIf(invoker.master && S_FlashLight(invoker.master).fl_batt_level == 2, "SmallLightSpot");
-		TNT1 A 0 A_JumpIf(invoker.master && S_FlashLight(invoker.master).fl_batt_level == 1, "SmallerLightSpot");
-		TNT1 A 1 A_SpawnItem("FlashLightSpot");
-		Stop;
-	SmallLightSpot:
-		TNT1 A 1 A_SpawnItem("FlashLightSpotSmall");
-		Stop;
-	SmallerLightSpot:
-		TNT1 A 1 A_SpawnItem("FlashLightSpotSmaller");
-		Stop;
-	NoLightSpot:
-		TNT1 A 0;
 		Stop;
 	}
 }
@@ -641,10 +635,10 @@ Class FlashLightSpot : Actor
 	Default
 	{
 	+NOGRAVITY;
-	//+NOCLIP;
 	+NOBLOCKMAP;
 	+DONTSPLASH;
 	+THRUACTORS;
+	-COUNTKILL;
 	Renderstyle "None";
 	Radius 10;
 	Height 10;
@@ -661,3 +655,31 @@ Class FlashLightSpot : Actor
 
 Class FlashLightSpotSmall : FlashLightSpot {}
 Class FlashLightSpotSmaller : FlashLightSpot {}
+
+//This actr is used to alert monsters when they are on the spotlight
+
+Class FlashLightAlarm : Actor
+{
+	Default
+	{
+	+NOGRAVITY;
+	+NOBLOCKMAP;
+	+DONTSPLASH;
+	+THRUACTORS;
+	+SHOOTABLE;
+	-COUNTKILL;
+	Health 9999;
+	Renderstyle "none";
+	Radius 10;
+	Height 10;
+	Damage 0;
+	}
+	
+	States
+	{
+	Spawn:
+		TNT1 A 0;
+		TNT1 A 10 A_AlertMonsters(92, AMF_TARGETEMITTER);
+		Stop;
+	}
+}
