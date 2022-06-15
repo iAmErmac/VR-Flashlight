@@ -21,6 +21,8 @@ To download the VR Flashlight mod click the download button below:
 * Agitate monsters focused in the light (you can turn this off in option)
 * You can use flashlight as a basic melee weapon (can hit monsters by 6dof controller movement)
 
+![Flashlight Melee Attack](https://i.imgflip.com/6jr48f.gif)
+
 ## Known Issues
 * The flashlight is a bit glitchy at times, like if you are too close to a wall/floor/ceiling the spotlight may jump around because of the nature of the tracking method.
 * If the flashlight itself or flashlight mounted weapon clips with other object or wall the spotlight may disappear
@@ -46,6 +48,7 @@ OR use DoomRunner: https://github.com/Youda008/DoomRunner/releases/ to load mods
 ### QuestZDoom (Oculus Quest)
 
 Official QuestZDoom: https://github.com/DrBeef/QuestZDoom/releases/latest
+
 Unofficial QuestZDoom (For more bugfixes and updates): https://github.com/emawind84/QuestZDoom/releases/latest
 
 QuestZDoom launcher: https://github.com/baggyg/QuestZDoomLauncher/releases/latest
