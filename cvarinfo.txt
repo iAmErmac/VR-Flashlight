@@ -1,5 +1,9 @@
 // <scope> [noarchive] [cheat] [latch] <type> <name> [= <defaultvalue>];
 
+server bool vr_flashlight_enabled = true;
+
+server bool vr_flashlight_allowflip = true;
+
 server color vr_flashlight_color = "FF FF FF";
 server int vr_flashlight_intensity = 256;
 
@@ -11,6 +15,12 @@ server int vr_flashlight_mount = 0;
 server int vr_flashlight_batt_overlay = 1;
 server int vr_flashlight_batt_cap = 3;
 server int vr_flashlight_dim = 1;
+server bool vr_flashlight_bouncelight = true;
+server bool vr_flashlight_alarm = true;
+
+server bool vr_flashlight_melee = true;
+server int vr_flashlight_melee_range = 0;
+server int vr_flashlight_melee_damage = 1;
 
 server int vr_flashlight_model = 1;
 server int vr_flashlight_pickup = 0;
