@@ -35,7 +35,8 @@ Make sure to load the VR Flashlight mod after any weapon mod. The Flashlight wil
 ### GZDoom VR (PC-VR)
 
 Latest GZDoom VR: https://github.com/hh79/gz3doom/releases/latest
-Latest GZDoom VR DUal Wield version: https://github.com/iAmErmac/gzdoomvr/releases/latest
+
+Latest GZDoom VR Dual Wield version: https://github.com/iAmErmac/gzdoomvr/releases/latest
 
 To install:
 
@@ -49,7 +50,9 @@ OR use DoomRunner: https://github.com/Youda008/DoomRunner/releases/latest to loa
 ### QuestZDoom (Oculus Quest)
 
 Official QuestZDoom: https://github.com/DrBeef/QuestZDoom/releases/latest
+
 Unofficial QuestZDoom (For more bugfixes and updates): https://github.com/emawind84/QuestZDoom/releases/latest
+
 Latest QuestZDoom Dual Wield version: https://github.com/emawind84/QuestZDoom/releases/tag/qzd3.88-r5e
 
 QuestZDoom launcher: https://github.com/baggyg/QuestZDoomLauncher/releases/latest
