@@ -1,5 +1,3 @@
 // Flashlight
 material texture "models/flashlight/flashlight.jpg" { shader "shaders/simsun.fp" }
-material texture "models/flashlight/flashlight2.jpg" { shader "shaders/simsun.fp" }
 material texture "models/flashlight/fl_tex.png" { shader "shaders/simsun.fp" }
-material texture "models/flashlight/fl_tex2.png" { shader "shaders/simsun.fp" }

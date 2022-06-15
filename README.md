@@ -1,8 +1,8 @@
 # Flashlight for Doom VR
 
-![Flashlight for Doom VR](https://i.imgflip.com/24egfa.gif)
+![Flashlight for Doom VR](https://i.imgflip.com/6ji2r3.gif)
 
-A Spotlight based flashlight mod to use with Doom in VR. Unlike the other flashlight mods out there, this flashlight actually follows your tracked controller rather than head movements. It's quite tricky in GZDoom engine since the engine doesn't seem to provide the weapon offsets/angle/pitch so I had to figure out some hacky way to track the controller offset/angle/pitch. I'm not really happy about the sphaghetti codes but hey if it works, it works.
+A Spotlight based flashlight mod to use with Doom in VR. Unlike the other flashlight mods out there, this flashlight actually follows your tracked controller rather than head movements. It's quite tricky in GZDoom engine since the engine doesn't seem to provide the weapon offsets/angle/pitch so I had to figure out some hacky way to track the main hand controller offset/angle/pitch. I'm not really happy about the sphaghetti codes but hey if it works, it works.
 
 To download the VR Flashlight mod click the download button below:
 
@@ -16,12 +16,15 @@ To download the VR Flashlight mod click the download button below:
 * 3D and Voxel model available for the flashlight
 * Optional battery capacity and battery indicator right on the Flashlight model itself
 * Option to attach flashlight on all your weapons (works universally)
-* Quick flashlight toggle available to switch back and forth between your weapon and flashlight or to toggle on/off when it's weapon mounted
+* Quick flashlight toggle to switch back and forth between your weapon and flashlight or to toggle on/off when flashlight is weapon mounted
+* Auto flip flashligh while having a tactical hold (Harris Hold)
+* Agitate monsters focused in the light (you can turn this off in option)
+* You can use flashlight as a basic melee weapon (can hit monsters by 6dof controller movement)
 
 ## Known Issues
 * The flashlight is a bit glitchy at times, like if you are too close to a wall/floor/ceiling the spotlight may jump around because of the nature of the tracking method.
 * If the flashlight itself or flashlight mounted weapon clips with other object or wall the spotlight may disappear
-* The spotlight becomes tiny when too close to wall/floor/ceiling. To partially fix that I implemented a secondary dynamic light to illuminate area surrounding the spotlight. Sometimes the spotlight and the secondary dynamic light may appear separated depending on the wall/object/corner etc.
+* Sometimes the spotlight and the bounce light (dynamic light) may appear separated depending on the wall/object/corner etc. Turn off bounced light from option to fix that
 
 ## Installation
 
@@ -65,6 +68,7 @@ To install:
 * SuaveSteve (Steve's Flashlight) - base ZScript code for the flashlight
 * mshahen - "Flashlight On/Off Clicks" (freesound.org, 271109, modified) CC BY 3.0
 * Cherno - for SimSun shader
+* Ermac - Flashlight mod scripting and model conversion
 
 ## 3D Model credits
 
