@@ -7,13 +7,15 @@ Class S_FlashLightControl : EventHandler
 	override void PlayerEntered(PlayerEvent e)
 	{
 		PlayerInfo plr = players[e.PlayerNumber];
-		plr.mo.setinventory("S_FlashLight", 1, false);
+		if(vr_flashlight_enabled) plr.mo.setinventory("S_FlashLight", 1, false);
 	}
 	
 	override void NetworkProcess(ConsoleEvent e)
 	{
 		PlayerInfo plr = players[consoleplayer];
 		if(!plr) return;
+		
+		if(!vr_flashlight_enabled) return;
 		
 		if(e.Name == "fl_quick_toggle")
 		{		
@@ -64,6 +66,9 @@ Class S_FlashLightControl : EventHandler
 	{
 		PlayerInfo plr = players[consoleplayer];
 		if(!plr) return;
+		
+		if(!vr_flashlight_enabled && plr.mo.countInv("S_FlashLight") > 0) plr.mo.setinventory("S_FlashLight", 0, false); //take away flashlight when disabled
+		if(vr_flashlight_enabled && plr.mo.countInv("S_FlashLight") < 1) plr.mo.setinventory("S_FlashLight", 1, false); //give back flashlight when enabled
 		
 		if(delay_autoactivate_flashlight == 1)
 		{
@@ -176,6 +181,7 @@ Class S_FlashLight : Fist
 	float fl_outer_angle;
 	int fl_flicker;
 	Bool is_flipped;
+	Int melee_delay;
 	
 	override void BeginPlay()
 	{
@@ -183,6 +189,7 @@ Class S_FlashLight : Fist
 		fl_batt_counter = fl_batt_capacity;
 		fl_batt_level = 10;
 		is_flipped = false;
+		melee_delay = 0;
 	}
 	
 	override void Tick()
@@ -341,6 +348,7 @@ Class S_FlashLight : Fist
 		if(fl_inner_angle) fl.SpotInnerAngle = fl_inner_angle;
 		if(fl_outer_angle) fl.SpotOuterAngle = fl_outer_angle;
 		
+		
 		//Turn off light when switched to a weapon
 		
 		Weapon current_weapon;
@@ -355,44 +363,103 @@ Class S_FlashLight : Fist
 			return;
 		}
 		
-		//Creating bounced light at close distance
 		
-		if(!fl.ready || !fl.on || !vr_flashlight_bouncelight) return;
+		//Melee attack routine
 		
-		Bool followOffhand = Weapon(owner.player.mo.findinventory("S_FlashLight")).bOffhandWeapon && (owner.player.OffhandWeapon is "S_FlashLight");
 		Double b_angle = owner.angle;
 		if(is_flipped) b_angle -= 180;
 		double pitch = owner.AimTarget() ? owner.BulletSlope(null, ALF_PORTALRESTRICT) : owner.pitch;
-		Actor tempPuff = owner.LineAttack( b_angle
-										 , 92
-										 , pitch
-										 , 0
-										 , "none"
-										 , "DummyPuff"
-										 , LAF_NOINTERACT | LAF_NOIMPACTDECAL | LAF_NORANDOMPUFFZ | (followOffhand ? LAF_ISOFFHAND : 0)
-										 );
-		if (tempPuff != null) {
-			Actor bounce_light;
-			if(fl_batt_level == 2)
-				bounce_light = Actor.Spawn("FlashLightSpotSmall", tempPuff.pos);
-			else if(fl_batt_level == 1)
-				bounce_light = Actor.Spawn("FlashLightSpotSmaller", tempPuff.pos);
-			else
-				bounce_light = Actor.Spawn("FlashLightSpot", tempPuff.pos);
+		FTranslatedLineTarget t, t2, t3;
+		
+		Bool followOffhand = Weapon(owner.player.mo.findinventory("S_FlashLight")).bOffhandWeapon && (owner.player.OffhandWeapon is "S_FlashLight");
+		
+		if(vr_flashlight_melee && current_weapon is "S_FlashLight")
+		{
+			int m_damage = (random(1, 10) * vr_flashlight_melee_damage) << 1;
+			if (owner.player.mo.FindInventory("PowerStrength"))
+				m_damage *= 10;
+			int attack_range = (vr_flashlight_melee_range + 1) * 32;
+				
+			if(!melee_delay)
+			{
+				//scan for melee target in a cone shaped area
+				owner.LineAttack(b_angle, attack_range, pitch, 0, "none", "DummyPuff", LAF_NOINTERACT | LAF_NOIMPACTDECAL | LAF_NORANDOMPUFFZ | (followOffhand ? LAF_ISOFFHAND : 0), t);
+				owner.LineAttack(b_angle - 30.0, attack_range, pitch, 0, "none", "DummyPuff", LAF_NOINTERACT | LAF_NOIMPACTDECAL | LAF_NORANDOMPUFFZ | (followOffhand ? LAF_ISOFFHAND : 0), t2);
+				owner.LineAttack(b_angle + 30.0, attack_range, pitch, 0, "none", "DummyPuff", LAF_NOINTERACT | LAF_NOIMPACTDECAL | LAF_NORANDOMPUFFZ | (followOffhand ? LAF_ISOFFHAND : 0), t3);
+				if(t.linetarget)
+				{
+					owner.LineAttack(b_angle, attack_range, pitch, m_damage, "Melee", "BulletPuff", LAF_NORANDOMPUFFZ | (followOffhand ? LAF_ISOFFHAND : 0));
+					melee_delay = 22;
+				}
+				else if(t2.linetarget)
+				{
+					owner.LineAttack(b_angle - 30.0, attack_range, pitch, m_damage, "Melee", "BulletPuff", LAF_NORANDOMPUFFZ | (followOffhand ? LAF_ISOFFHAND : 0));
+					melee_delay = 22;
+				}
+				else if(t3.linetarget)
+				{
+					owner.LineAttack(b_angle + 30.0, attack_range, pitch, m_damage, "Melee", "BulletPuff", LAF_NORANDOMPUFFZ | (followOffhand ? LAF_ISOFFHAND : 0));
+					melee_delay = 22;
+				}
+			}
+			else if(melee_delay > 0)
+			{
+				melee_delay--;
+			}
 		}
+		
+		
+		if(!fl.ready || !fl.on) return;
+		
+		//Creating bounced light at close distance
+		
+		if(vr_flashlight_bouncelight)
+		{
+			//check first if there is any actor on target
+			owner.LineAttack( b_angle
+							 , 92
+							 , pitch
+							 , 0
+							 , "none"
+							 , "DummyPuff"
+							 , LAF_NOINTERACT | LAF_NOIMPACTDECAL | LAF_NORANDOMPUFFZ | (followOffhand ? LAF_ISOFFHAND : 0)
+							 , t
+							 );
+			if (!t.linetarget) { //this makes sure bounced lights are created only when hitting nearby wall/floor/ceiling
+				Actor tempPuff = owner.LineAttack( b_angle
+												 , 92
+												 , pitch
+												 , 0
+												 , "none"
+												 , "DummyPuff"
+												 , LAF_NOIMPACTDECAL | LAF_NORANDOMPUFFZ | (followOffhand ? LAF_ISOFFHAND : 0)
+												 );
+				if (tempPuff != null) {
+					Actor bounce_light;
+					if(fl_batt_level == 2)
+						bounce_light = Actor.Spawn("FlashLightSpotSmall", tempPuff.pos);
+					else if(fl_batt_level == 1)
+						bounce_light = Actor.Spawn("FlashLightSpotSmaller", tempPuff.pos);
+					else
+						bounce_light = Actor.Spawn("FlashLightSpot", tempPuff.pos);
+				}
+			}
+		}
+		
 		
 		//Pointing light directly on nearby monsters will alert them
 		
-		if(!vr_flashlight_alarm) return;
-		
-		owner.LineAttack( b_angle
-						 , 960
-						 , pitch
-						 , 0
-						 , "none"
-						 , "FlashLightAlarm"
-						 , LAF_NOINTERACT | LAF_NOIMPACTDECAL | LAF_NORANDOMPUFFZ | (followOffhand ? LAF_ISOFFHAND : 0)
-						 );
+		if(vr_flashlight_alarm)
+		{
+			owner.LineAttack( b_angle
+							 , 960
+							 , pitch
+							 , 0
+							 , "none"
+							 , "FlashLightAlarm"
+							 , LAF_NOINTERACT | LAF_NOIMPACTDECAL | LAF_NORANDOMPUFFZ | (followOffhand ? LAF_ISOFFHAND : 0)
+							 );
+		}
 	}
 	
 	override void DetachFromOwner()
@@ -507,9 +574,13 @@ Class S_FlashLight : Fist
 		"####" A 1 A_Raise(60);
 		Loop;
 	Fire:
-		"####" A 0 A_FlashLight();
-		"####" AAAAAAAAAAAAAAA 1 A_Overlay(1001, "BatteryOverlay");
+		"####" "#" 0 A_FlashLight();
+		"####" "#" 1 A_JumpIf(invoker.is_flipped == true, "WaitFlipped");
+		"####" "###############" 1 A_Overlay(1001, "BatteryOverlay");
 		Goto Ready;
+	WaitFlipped:
+		"####" "###############" 1;
+		Goto ReadyFlipped;
 	BatteryOverlay:
 		FLBT A 0 A_JumpIf(vr_flashlight_model == 0, "VBatteryOverlay");
 		"####" A 0 A_JumpIf(invoker.fl_batt_level == 0, "BatteryLevel0");
@@ -611,17 +682,19 @@ Class S_FlashLight : Fist
 		FLVN A 0;
 		Stop;
 	}
-	
-	static const statelabel bl_labels[] =
-	{
-	"BatteryLevel1", "BatteryLevel2", "BatteryLevel3", "BatteryLevel4", "BatteryLevel5", "BatteryLevel6", "BatteryLevel7", "BatteryLevel8", "BatteryLevel9", "BatteryLevel10"
-	};
 }
 
 //Dynamic light actors to use when flashlight hits the floor
 
 Class DummyPuff : BulletPuff
 {
+	Default
+	{
+	+NOGRAVITY;
+	+DONTSPLASH;
+	Renderstyle "None";
+	Damage 0;
+	}
 	States
 	{
 	Spawn:

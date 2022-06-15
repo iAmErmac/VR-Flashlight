@@ -19,6 +19,9 @@ To download the VR Flashlight mod click the download button below:
 * Quick flashlight toggle to equip/unequip flashlight on off-hand or toggle on/off light when flashlight is weapon mounted
 * Auto flip flashligh while having a tactical hold (Harris Hold)
 * Agitate monsters focused in the light (you can turn this off in option)
+* You can use flashlight as a basic melee weapon (can hit monsters by 6dof controller movement)
+
+![Flashlight Melee Attack](https://i.imgflip.com/6jr48f.gif)
 
 ## Known Issues
 * The flashlight is a bit glitchy at times, like if you are too close to a wall/floor/ceiling the spotlight may jump around because of the nature of the tracking method.

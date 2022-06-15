@@ -14,10 +14,19 @@ OptionValue FLPickupModelOptions {
 
 }
 
+OptionValue FLMeleeDamage {
+
+    1, "1x Punch Damage"
+    2, "2x Punch Damage"
+    3, "3x Punch Damage"
+
+}
 
 OptionMenu "VR_Flashlight"
 {
     Title "VR Flashlight Options"
+    StaticText " "
+    Option "Enable VR Flashlight", 			vr_flashlight_enabled, 		"OnOff"
     StaticText " "
     Option "Allow Auto Flip", 				vr_flashlight_allowflip, 	"YesNo"
     StaticText "Auto flips the flashlight based on tactical hold (Harris Hold)", "DarkGrey"
@@ -34,13 +43,18 @@ OptionMenu "VR_Flashlight"
     Option "Enable Bounced Light", 			vr_flashlight_bouncelight, 	"YesNo"
     StaticText "Create bounced light when lightbeam hits wall/floor at close distance", "DarkGrey"
     StaticText " "
+    Option "Allow Melee Attack", 			vr_flashlight_melee, 		"YesNo"
+    Slider "Melee Attack Range", 			vr_flashlight_melee_range, 	0, 3, 1, 0, vr_flashlight_melee
+    Option "Melee Attack Damage", 			vr_flashlight_melee_damage, "FLMeleeDamage", vr_flashlight_melee
+    StaticText "You can melee hit the monsters with the flashlight when enabled", "DarkGrey"
+    StaticText " "
     Option "Agitate Monsters", 				vr_flashlight_alarm, 	"YesNo"
     StaticText "Pointing the light directly on monsters will agitate them", "DarkGrey"
     StaticText " "
-    Option "Weapon mounted flashlight", 	vr_flashlight_mount, 		"OnOff"
+    Option "Weapon Mounted Flashlight", 	vr_flashlight_mount, 		"OnOff"
     StaticText "Flashlight can be used with all weapons", "DarkGrey"
     StaticText " "
-	Control "Quick flashlight toggle", "netevent fl_quick_toggle"
+	Control "Quick Flashlight Toggle", "netevent fl_quick_toggle"
     StaticText "Pressing quick flashlight key will equip Flashlight on Off-hand", "DarkGrey"
     StaticText "Press again to unequip flashlight", "DarkGrey"
     StaticText "When weapon mounted this will work as On/Off switch", "DarkGrey"
