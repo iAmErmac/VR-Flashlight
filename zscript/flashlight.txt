@@ -360,8 +360,8 @@ Class S_FlashLight : Fist
 			{
 				//scan for melee target in a cone shaped area
 				owner.LineAttack(b_angle, attack_range, pitch, 0, "none", "DummyPuff", LAF_NOINTERACT | LAF_NOIMPACTDECAL | LAF_NORANDOMPUFFZ, t);
-				owner.LineAttack(b_angle - 45.0, attack_range, pitch, 0, "none", "DummyPuff", LAF_NOINTERACT | LAF_NOIMPACTDECAL | LAF_NORANDOMPUFFZ, t2);
-				owner.LineAttack(b_angle + 45.0, attack_range, pitch, 0, "none", "DummyPuff", LAF_NOINTERACT | LAF_NOIMPACTDECAL | LAF_NORANDOMPUFFZ, t3);
+				owner.LineAttack(b_angle - 30.0, attack_range, pitch, 0, "none", "DummyPuff", LAF_NOINTERACT | LAF_NOIMPACTDECAL | LAF_NORANDOMPUFFZ, t2);
+				owner.LineAttack(b_angle + 30.0, attack_range, pitch, 0, "none", "DummyPuff", LAF_NOINTERACT | LAF_NOIMPACTDECAL | LAF_NORANDOMPUFFZ, t3);
 				if(t.linetarget)
 				{
 					owner.LineAttack(b_angle, attack_range, pitch, m_damage, "Melee", "BulletPuff", LAF_NORANDOMPUFFZ);
@@ -369,12 +369,12 @@ Class S_FlashLight : Fist
 				}
 				else if(t2.linetarget)
 				{
-					owner.LineAttack(b_angle - 45.0, attack_range, pitch, m_damage, "Melee", "BulletPuff", LAF_NORANDOMPUFFZ);
+					owner.LineAttack(b_angle - 30.0, attack_range, pitch, m_damage, "Melee", "BulletPuff", LAF_NORANDOMPUFFZ);
 					melee_delay = 22;
 				}
 				else if(t3.linetarget)
 				{
-					owner.LineAttack(b_angle + 45.0, attack_range, pitch, m_damage, "Melee", "BulletPuff", LAF_NORANDOMPUFFZ);
+					owner.LineAttack(b_angle + 30.0, attack_range, pitch, m_damage, "Melee", "BulletPuff", LAF_NORANDOMPUFFZ);
 					melee_delay = 22;
 				}
 			}
@@ -707,6 +707,13 @@ Class FlashLightBeamTracer : Actor
 
 Class DummyPuff : BulletPuff
 {
+	Default
+	{
+	+NOGRAVITY;
+	+DONTSPLASH;
+	Renderstyle "None";
+	Damage 0;
+	}
 	States
 	{
 	Spawn:
