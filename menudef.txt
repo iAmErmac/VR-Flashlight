@@ -3,6 +3,7 @@ OptionValue FLModelOptions {
 
     0, "Voxel Model"
     1, "3D Model"
+    2, "3D Model (PBR)"
 
 }
 

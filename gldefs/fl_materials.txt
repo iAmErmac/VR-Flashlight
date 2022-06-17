@@ -1,0 +1,17 @@
+material texture "models/flashlight/flashlight3.jpg"
+{ 
+    normal 		"models/flashlight/flashlight_n.jpg"
+    metallic 	"models/flashlight/flashlight_m.jpg"
+	roughness 	"models/flashlight/flashlight_r.jpg"
+	ao 			"models/flashlight/flashlight_ao.jpg"
+	brightmap 	"models/flashlight/flashlight_bm.jpg"
+}
+
+material texture "models/flashlight/flashlight4.jpg"
+{ 
+    normal 		"models/flashlight/flashlight_n.jpg"
+    metallic 	"models/flashlight/flashlight_m.jpg"
+	roughness 	"models/flashlight/flashlight_r.jpg"
+	ao 			"models/flashlight/flashlight_ao.jpg"
+	brightmap 	"models/flashlight/fl_tex_grey.png"
+}
