@@ -37,6 +37,44 @@ Model S_Flashlight
    FrameIndex FLTN B 0 0 //Y flipped
 }
 
+//3D model (with PBR materials)
+Model S_Flashlight
+{
+   Path "Models\flashlight"
+   Model 0 "flashlight.md3"
+   SurfaceSkin 0 0 "flashlight_glass.png"
+   SurfaceSkin 0 1 "flashlight3.jpg"
+   SurfaceSkin 0 2 "flashlight2.jpg"
+   
+   Scale -0.8 0.8 0.8
+   Offset 0.0 -23.0 -9.0
+   ZOffset -7.0
+   
+   FrameIndex FLTP A 0 0
+   
+   Scale -0.8 -0.8 0.8
+   FrameIndex FLTP B 0 0 //Y flipped
+}
+
+//no brightmap (with PBR materials)
+Model S_Flashlight
+{
+   Path "Models\flashlight"
+   Model 0 "flashlight.md3"
+   SurfaceSkin 0 0 "flashlight_glass.png"
+   SurfaceSkin 0 1 "flashlight4.jpg"
+   SurfaceSkin 0 2 "flashlight.jpg"
+   
+   Scale -0.8 0.8 0.8
+   Offset 0.0 -23.0 -9.0
+   ZOffset -7.0
+   
+   FrameIndex FLNP A 0 0
+   
+   Scale -0.8 -0.8 0.8
+   FrameIndex FLNP B 0 0 //Y flipped
+}
+
 //Pickup model
 Model S_Flashlight
 {

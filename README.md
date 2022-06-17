@@ -13,7 +13,7 @@ To download the VR Flashlight mod click the download button below:
 ## Features
 * You can actually hold a flashlight at hand
 * While holding the flashlight, use attack button to turn it on/off
-* 3D and Voxel model available for the flashlight
+* 3D (shaded and PBR) and Voxel model available for the flashlight
 * Optional battery capacity and battery indicator right on the Flashlight model itself
 * Option to attach flashlight on all your weapons (works universally)
 * Quick flashlight toggle to switch back and forth between your weapon and flashlight or to toggle on/off when flashlight is weapon mounted

@@ -21,7 +21,7 @@ Class S_FlashLightControl : EventHandler
 		{		
 			if(vr_flashlight_mount || plr.ReadyWeapon is "S_FlashLight")
 			{
-				//toggle flashlight on/off when weapon mounted or olding flashlight on main hand
+				//toggle flashlight on/off when weapon mounted or holding flashlight in main hand
 				
 				let fl = TrackedSpotLight(S_FlashLight(plr.mo.findinventory("S_FlashLight")).f_light);
 				
@@ -471,6 +471,13 @@ Class S_FlashLight : Fist
 			else
 				w_sprite = "FLTN";
 		}
+		else if(model_type == 2)
+		{
+			if(fl && fl.on)
+				w_sprite = "FLTP";
+			else
+				w_sprite = "FLNP";
+		}
 		else
 		{
 			if(fl && fl.on)
@@ -644,6 +651,8 @@ Class S_FlashLight : Fist
 		Stop;
 	Dummy:
 		FLTN A 0;
+		FLTP A 0;
+		FLNP A 0;
 		FLTV A 0;
 		FLVN A 0;
 		Stop;
